@@ -101,10 +101,12 @@ sudo apt-get -y update
 sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 sudo chmod 666 /var/run/docker.sock
 sudo apt install make
+sudo apt install postgresql postgresql-contrib
+sudo systemctl start postgresql.service
 echo 'Clone git repo to EC2'
 cd /home/ubuntu && git clone ${var.repo_url}
-echo 'CD to data_engineering_project_template directory'
-cd data_engineering_project_template
+echo 'CD to de_challenge'
+cd de_challenge
 echo 'Start containers & Run db migrations'
 make up
 echo "-------------------------END SETUP---------------------------"

@@ -6,8 +6,7 @@ docker-spin-up:
 perms:
 	sudo mkdir -p logs plugins temp dags tests migrations && sudo chmod -R u=rwx,g=rwx,o=rwx logs plugins temp dags tests migrations
 
-up: 
-	perms docker-spin-up warehouse-migration
+up: perms docker-spin-up warehouse-migration
 
 down:
 	docker compose down
@@ -29,8 +28,7 @@ type:
 lint:
 	docker exec webserver flake8 /opt/airflow/dags
 
-ci:
-	isort format type lint pytest
+ci: isort format type lint
 
 # Setup cloud infrastructure
 
@@ -52,7 +50,7 @@ db-migration:
 	@read -p "Enter migration name": migration_name; docker exec webserver yoyo new ./migrations -m "$$migration_name"
 
 warehouse-migration:
-	docker exec webserver yoyo rollback --no-config-file --database postgres://fernando:ferpassword1234@warehouse:5432/door2door ./migrations
+	docker exec webserver yoyo develop --no-config-file --database postgres://fernando:ferpassword1234@warehouse:5432/door2door ./migrations
 
 warehouse-rollback:
 	docker exec webserver yoyo rollback --no-config-file --database postgres://fernando:ferpassword1234@warehouse:5432/door2door ./migrations
@@ -60,7 +58,7 @@ warehouse-rollback:
 # Port forwarding from cloud to Local machine
 
 cloud-airflow:
-	terraform -chdir=./terraform output -raw private_key > private_key.pem && chmod 600 private_key.pem && ssh -o "IdentitiesOnly yes" -i private_key.pem ubuntu@$$(terraform -chdir=./terraform output -raw ec2_public_dns) -N -f -L 8081:$$(terraform -chdir=./terraform output -raw ec2_public_dns):8080 && open http://localhost:8081 && rm private_key.pem
+	terraform -chdir=./terraform output -raw private_key > private_key.pem && chmod 600 private_key.pem && ssh -o "IdentitiesOnly yes" -i private_key.pem ubuntu@$$(terraform -chdir=./terraform output -raw ec2_public_dns) -N -f -L 8888:$$(terraform -chdir=./terraform output -raw ec2_public_dns):8080 && xdg-open http://localhost:8888 && rm private_key.pem
 
 # Helpers
 
