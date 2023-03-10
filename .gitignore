@@ -212,4 +212,4 @@ terraform.rc
 Footer
 
 # Ignore env file
-env
+*env*
