@@ -210,3 +210,6 @@ override.tf.json
 .terraformrc
 terraform.rc
 Footer
+
+# Ignore env file
+env
