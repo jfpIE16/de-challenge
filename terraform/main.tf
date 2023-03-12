@@ -46,6 +46,18 @@ resource "aws_security_group" "sde_security_group" {
   }
 }
 
+# Create S3 bucket to load curated CSVs and save history
+resource "aws_s3_bucket" "b" {
+  bucket = var.bucket_name
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_object" "s3_folders" {
+  for_each = var.s3_folders
+  bucket   = aws_s3_bucket.b.id
+  key      = "${each.value}/"
+}
+
 # Create EC2 with IAM role to allow EMR, Redshift, & S3 access and security group 
 resource "tls_private_key" "custom_key" {
   algorithm = "RSA"

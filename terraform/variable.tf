@@ -32,3 +32,16 @@ variable "repo_url" {
     type        = string
     default     = "https://github.com/jfpIE16/de-challenge.git"
 }
+
+## S3 Lake folders and name
+variable "bucket_name" {
+    description = "Main bucket name"
+    type        = string
+    default     = "door2door-lake"
+}
+
+variable "s3_folders" {
+    description = "Default folders for the different layers of the Data Lake."
+    type        = set(string)
+    default     = ["raw", "stage", "curated"]
+}
