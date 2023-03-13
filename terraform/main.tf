@@ -117,8 +117,8 @@ sudo apt install postgresql postgresql-contrib
 sudo systemctl start postgresql.service
 echo 'Clone git repo to EC2'
 cd /home/ubuntu && git clone ${var.repo_url}
-echo 'CD to de_challenge'
-cd de_challenge
+echo 'CD to de-challenge'
+cd de-challenge
 echo 'Start containers & Run db migrations'
 make up
 echo "-------------------------END SETUP---------------------------"
