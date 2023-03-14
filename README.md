@@ -90,6 +90,13 @@ def _load(ds):
 * For this function the *Atomicity* principle of the functional design is being violated because the function is performing 2 tasks, handle the DB connection and also performing the bulk insert. To solve that would be useful to write an utils package in which we can handle the DB connection and only returns the cursor to apply the insert.
 * For the whole ETL the *Idempotency* principle is being violated because if we run multiple times for a unique date we would have duplicated records, there are 2 ways to handle this, the first one is to add a Primary key composed of the *vehicle id* and the *at timestamp* that will be a solution at the DB level and in code we can perform a *SELECT DISTINCT(at_timestamp)* and validate that if there is data for the date that we are working then delete that data.
 
+## Data modelling
+For the data model I propose a simple star schema defining one dimension that is the vehicle and one fact to keep track of the accumulated distance of each vehicle.  
+You can see the dimension and fact tables diagram below:
+![Model](images/Loka-Modelling.png)
+
+For the vehicle dimension an *sid* field was defined to create a robust compound key between the *sid* and *vehicle_id* columns, the main idea is to keep track of changes in the vehicle (SCD), for example, if the vehicle starts working to another organization you can keep track of that change that could be useful for reports like accumulated distance by organization.
+
 ## Code structure
 ```markdown
 .
