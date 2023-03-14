@@ -14,7 +14,7 @@ down:
 sh:
 	docker exec -ti webserver bash
 
-# Testing, auto formatting, type & lint checks
+# Auto formatting, type & lint checks
 
 format:
 	docker exec webserver python -m black -S --line-length 79 .
