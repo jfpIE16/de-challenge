@@ -1,5 +1,29 @@
 """
-door2door ETL pipeline
+NAME
+    door2door ETL pipeline
+
+DESCRIPTION
+    This dag is intended to execute and ETL pipeline
+    for the door2door data engineering challenge.
+
+FUNCTIONS
+    _extract(ds)
+        Download all the json files for an specific date from 
+        a public s3 bucket.
+    
+    _transform(ds)
+        Read each json file for an specific date and transform all
+        the entries in each file (dict like entries) into a readable
+        comma separated line that is appended to a csv file.
+
+    _load(ds)
+        Read the output CSV file for an specific date and create a
+        INSERT INTO VALUES () statement to insert the data into the
+        data warehouse.
+
+    _get_update_location_data(line: dict)
+        Receives a dictionary object and returns a comma separated
+        line string with only the filtered rows needed.
 """
 import os
 
@@ -17,6 +41,27 @@ WAREHOUSE_PORT = os.environ['WAREHOUSE_PORT']
 
 
 def _get_update_location_data(line: dict):
+    """
+    Helper function to extract vehicle location update from dictionary.
+    Input: dict -> 
+        {
+        "event": "update",
+        "on": "vehicle",
+        "at": "2019-06-01T18:17:12.105Z",
+        "data": {
+            "id": "bac5188f-67c6-4965-81dc-4ef49622e280",
+            "location": {
+                "lat": 52.45176,
+                "lng": 13.45989,
+                "at": "2019-06-01T18:17:12.105Z"
+            }
+        },
+        "organization_id": "org-id"
+        }
+    Output:
+        Comma separated string
+        bac5188f-67c6-4965-81dc-4ef49622e280,52.4517613.45989,"2019-06-01T18:17:12.105Z"
+    """
     return f"""{line['data']['id']},\
             {line['data']['location']['lat']},\
             {line['data']['location']['lng']},\
@@ -24,6 +69,9 @@ def _get_update_location_data(line: dict):
 
 
 def _extract(ds):
+    """
+    Function to get the data from S3 bucket and download it to a temporary folder.
+    """
     import s3fs
 
     fs = s3fs.S3FileSystem(anon=True)
@@ -37,6 +85,11 @@ def _extract(ds):
 
 
 def _transform(ds):
+    """
+    Function to read file by file in a line level and get an CSV output file with the filtered
+    events: 
+    Filtered event -> update, vehicle
+    """
     import json
 
     _csvFile = open(f"temp/csv/output_{ds}.csv", "w")
@@ -51,6 +104,11 @@ def _transform(ds):
 
 
 def _load(ds):
+    """
+    Function to load the data into PostgreSQL.
+    Input: Search for an specific date output file in /temp/csv/ folder.
+    Output: Execute INSERT INTO tablename VALUES () for each line of the CSV file.
+    """
     import csv
 
     import psycopg2
